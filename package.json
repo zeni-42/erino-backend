@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A backend server for a Lead management system",
+  "keywords": [
+    "deno",
+    "zeni-42"
+  ],
+  "homepage": "https://github.com/zeni-42/erino-backend#readme",
+  "bugs": {
+    "url": "https://github.com/zeni-42/erino-backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zeni-42/erino-backend.git"
+  },
+  "license": "ISC",
+  "author": "deno (Amitab)",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon -r dotenv/config src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
+  }
+}
