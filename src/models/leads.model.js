@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const leadSchema = new mongoose.Schema({
     first_name: {
         type: String,
         required: true,
@@ -20,14 +20,19 @@ const userSchema = new mongoose.Schema({
         unique: true,
         index: true
     },
+    password: {
+        type: String,
+    },
+    refresh_token: {
+        type: String,
+    },
     phone: {
         type: Number,
         unique: true,
         index: true
     },
     company: { 
-        type: String, 
-        required: true, 
+        type: String,
         maxlength: 255
     },
     city: { 
@@ -41,7 +46,6 @@ const userSchema = new mongoose.Schema({
     source: {
         type: String,
         enum: ["website", "facebook_ads", "google_ads", "referral", "events", "other"],
-        required: true,
     },
     status: {
         type: String,
@@ -68,4 +72,4 @@ const userSchema = new mongoose.Schema({
     },
 }, { timestamps: true, versionKey: false })
 
-const User = mongoose.model("User", userSchema)
+export const Lead = mongoose.model("Lead", leadSchema)

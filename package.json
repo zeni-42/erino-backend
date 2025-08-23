@@ -23,6 +23,7 @@
     "dev": "nodemon -r dotenv/config src/index.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
