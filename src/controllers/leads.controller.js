@@ -30,7 +30,7 @@ export const registerLead = asyncHandler(async(req, res) => {
     })
 
     const createdLead = await Lead.findById(lead._id).select(
-        "-password -refreshToken"
+        "-password -refresh_token"
     )
 
     if (!createdLead) {
@@ -61,8 +61,19 @@ export const loginLead = asyncHandler(async(req, res) => {
 
     const { accessToken, refreshToken } = generateAccessAndRefereshTokens(lead)
 
+    await Lead.findByIdAndUpdate(lead?._id, 
+        {
+            $set: {
+                refresh_token: refreshToken
+            }
+        },
+        {
+            $new: true
+        }
+    )
+
     const loggedinLead = await Lead.findById(lead._id).select(
-        "-password -refreshToken"
+        "-password -refresh_token"
     )
 
     const cookieOptions = {
@@ -144,7 +155,7 @@ export const getLeadById = asyncHandler(async(req, res) => {
     }
 
     const leadInDB = await Lead.findById(id).select(
-        "-password -refreshToken"
+        "-password -refresh_token"
     )
     if (!leadInDB) {
         throw new ApiError(400, "Lead not found")
@@ -167,3 +178,44 @@ export const deleteLead = asyncHandler(async (req, res) => {
         new ApiResponse(200, `Lead deleted where id=${id}`)
     )
 })
+
+export const updateLead = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const allowedUpdates = [
+            "first_name",
+            "last_name",
+            "phone",
+            "company",
+            "city",
+            "state",
+            "source",
+            "status",
+            "score",
+            "lead_value",
+            "last_activity_at",
+            "is_qualified"
+        ];
+
+        const updates = {};
+        for (const key of allowedUpdates) {
+            if (req.body[key] !== undefined) {
+                updates[key] = req.body[key];
+            }
+        }
+
+        const lead = await Lead.findByIdAndUpdate(
+        id,
+        { $set: updates },
+        { new: true, runValidators: true }
+        ).select(
+            "-password -refresh_token"
+        );
+
+        return res.status(200).json(
+            new ApiResponse(200, lead, "Lead updated successfully")
+        )
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+};
