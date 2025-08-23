@@ -98,9 +98,72 @@ export const logoutLead = asyncHandler( async(req, res) => {
     }
 
     return res.status(200)
-    .clearCookie("accessToken")
-    .clearCookie("refreshToken")
+    .clearCookie("accessToken", cookieOptions)
+    .clearCookie("refreshToken", cookieOptions)
     .json(
         new ApiResponse(200, {}, "Lead logged out")
+    )
+})
+
+export const getAllLeads = asyncHandler(async(req, res) => {
+    // Sample response
+    // {
+    //     "data": [/* leads */],
+    //     "page": 2,
+    //     "limit": 20,
+    //     "total": 146,
+    //     "totalPages": 8
+    // }
+
+    const limit = parseInt(req.query.limit) || 20
+    const page = parseInt(req.query.page) || 1
+    const skip = (page - 1) * limit
+
+    if (limit > 100) {
+        throw new ApiError(400, "Max limit is 100")
+    }
+
+    const documents = await Lead.find().skip(skip).limit(limit)
+    const totalDocuments = await Lead.find().countDocuments()
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            data: documents,
+            page,
+            limit,
+            total: totalDocuments,
+            totalPages: Math.ceil(totalDocuments / limit)
+        }, "All Leads data")
+    )
+})
+
+export const getLeadById = asyncHandler(async(req, res) => {
+    const { id } = req.params
+    if (!id) {
+        throw new ApiError(400, "Missing fields")
+    }
+
+    const leadInDB = await Lead.findById(id).select(
+        "-password -refreshToken"
+    )
+    if (!leadInDB) {
+        throw new ApiError(400, "Lead not found")
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, leadInDB, `Lead data for ${id}`)
+    )
+})
+
+export const deleteLead = asyncHandler(async (req, res) => { 
+    const { id } = req.params
+    if (!id) {
+        throw new ApiError(400, "Missing values")
+    }
+
+    await Lead.findByIdAndDelete(id)
+
+    return res.status(200).json(
+        new ApiResponse(200, `Lead deleted where id=${id}`)
     )
 })
