@@ -1,1 +1,1 @@
-export const DBNAME = "erino-dev"
+export const DBNAME = "erino"
