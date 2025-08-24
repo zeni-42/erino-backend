@@ -2,6 +2,65 @@ import { Lead } from "../models/leads.model.js";
 import { asyncHandler } from "../utils/asynchandler.js";
 import { ApiError, ApiResponse } from "../utils/response.js";
 
+export const createLead = asyncHandler(async(req, res) => {
+    const {firstName, lastName, email, phone, company, city, state, source, status, score, leadValue, isQualified} = await req.body
+    if (!(firstName && lastName && email && phone && source && status)){
+        throw new ApiError(400, "Missing fields")
+    }
+
+    if (score != null && (isNaN(score) || score < 0)) {
+        throw new ApiError(400, "Score must be a non-negative number")
+    }
+    if (leadValue != null && (isNaN(leadValue) || leadValue < 0)) {
+        throw new ApiError(400, "Lead value must be a non-negative number")
+    }
+    
+    const validSources = ["website", "facebook_ads", "google_ads", "referral", "events", "other"]
+    const validStatuses = ["new", "contacted", "qualified", "lost", "won"]
+    if (!validSources.includes(source)) {
+        throw new ApiError(400, "Invalid source value")
+    }
+    if (!validStatuses.includes(status)) {
+        throw new ApiError(400, "Invalid status value")
+    }
+    
+    if (company && company.length > 255) {
+        throw new ApiError(400, "Company name too long")
+    }
+    if (city && city.length > 100) {
+        throw new ApiError(400, "City name too long")
+    }
+    if (state && state.length > 100) {
+        throw new ApiError(400, "State name too long")
+    }
+
+    const existingLead = await Lead.findOne({
+        $or: [{ email }, { phone }],
+    })
+    if (existingLead) {
+        throw new ApiError(409, "Lead with this email or phone already exists")
+    }
+
+    const lead = Lead.create({
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        email,
+        phone,
+        company,
+        city,
+        state,
+        source,
+        status,
+        score: score ?? 0,
+        lead_value: leadValue ?? 0,
+        is_qualified: isQualified ?? false,
+    })
+
+    return res.status(201).json(
+        new ApiResponse(201, lead, "Lead added")
+    )
+})
+
 export const getAllLeads = asyncHandler(async(req, res) => {
     const limit = parseInt(req.query.limit) || 20
     const page = parseInt(req.query.page) || 1
