@@ -54,7 +54,7 @@ export const loginLead = asyncHandler(async(req, res) => {
         throw new ApiError(404, "Lead not found")
     }
 
-    const isValidPassword = bcrypt.compare(password, lead?.password)
+    const isValidPassword = await bcrypt.compare(password, lead?.password)
     if (!isValidPassword) {
         throw new ApiError(400, "Invalid credentails")
     }
@@ -78,7 +78,8 @@ export const loginLead = asyncHandler(async(req, res) => {
 
     const cookieOptions = {
         httpOnly: true, 
-        secure: true
+        secure: true,
+        sameSite: "none",
     }
 
     return res.status(200)
@@ -105,7 +106,8 @@ export const logoutLead = asyncHandler( async(req, res) => {
 
     const cookieOptions = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "none"
     }
 
     return res.status(200)
@@ -117,15 +119,6 @@ export const logoutLead = asyncHandler( async(req, res) => {
 })
 
 export const getAllLeads = asyncHandler(async(req, res) => {
-    // Sample response
-    // {
-    //     "data": [/* leads */],
-    //     "page": 2,
-    //     "limit": 20,
-    //     "total": 146,
-    //     "totalPages": 8
-    // }
-
     const limit = parseInt(req.query.limit) || 20
     const page = parseInt(req.query.page) || 1
     const skip = (page - 1) * limit
