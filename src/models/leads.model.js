@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 const leadSchema = new mongoose.Schema({
@@ -20,12 +19,6 @@ const leadSchema = new mongoose.Schema({
         trim: true,
         unique: true,
         index: true
-    },
-    password: {
-        type: String,
-    },
-    refresh_token: {
-        type: String,
     },
     phone: {
         type: Number,
