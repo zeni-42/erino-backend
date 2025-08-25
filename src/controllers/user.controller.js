@@ -22,13 +22,13 @@ export const registerUser = asyncHandler (async(req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    const lead = await User.create({
+    const user = await User.create({
         fullName,
         email,
         password: hashedPassword
     })
 
-    const createdUser = await User.findById(lead._id).select(
+    const createdUser = await User.findById(user._id).select(
         "-password -refresh_token"
     )
 
@@ -78,7 +78,7 @@ export const loginUser = asyncHandler(async(req, res) => {
     const cookieOptions = {
         httpOnly: true, 
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
     }
 
     return res.status(200)
@@ -106,7 +106,7 @@ export const logoutUser = asyncHandler(async(req, res) => {
     const cookieOptions = {
         httpOnly: true,
         secure: true,
-        sameSite: "none"
+        sameSite: "lax"
     }
 
     return res.status(200)
