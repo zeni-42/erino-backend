@@ -78,9 +78,7 @@ export const loginUser = asyncHandler(async(req, res) => {
     const cookieOptions = {
         httpOnly: true, 
         secure: true,
-        sameSite: "None",
-        domain: "erino-backend-65v5.onrender.com"
-
+        sameSite: 'None',
     }
 
     return res.status(200)
@@ -108,8 +106,7 @@ export const logoutUser = asyncHandler(async(req, res) => {
     const cookieOptions = {
         httpOnly: true,
         secure: true,
-        sameSite: "None",
-        domain: "erino-backend-65v5.onrender.com"
+        sameSite: 'None',
     }
 
     return res.status(200)
