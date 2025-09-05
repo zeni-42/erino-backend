@@ -201,7 +201,7 @@ export const leadQuery = asyncHandler (async(req, res) => {
         last_activity_at_after,
         last_activity_at_between,
         is_qualified_equals,
-        limit = 20,
+        limit = 1000,
     } = req.query;
 
     const filter = {};
